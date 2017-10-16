@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>LEGO Assembly Orders Interface</title>
+		<link rel="stylesheet" type="text/css" href="assets/bulma.css">
+
+		<style>
+			html {
+				background-image: url("assets/bg.png");
+			}
+
+			.partText {
+				-webkit-text-stroke: 1.25px white;
+			}
+
+			.partImage {
+				display:block;
+				margin-left:auto;
+				margin-right:auto;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="hero is-primary is-bold">
+			<div class="hero-body">
+				<div class="level">
+					<div class="level-left">
+						<div class="level-item">
+							<figure class="image is-64x64">
+								<img src="assets/logo.png">
+							</figure>
+						</div>
+						<div class="level-item">
+							<h1 class="title">
+								LEGO Assembly Orders Interface
+							</h1>
+						</div>
+					</div>
+					<div class="level-right">
+						<div class="level-item has-text-centered">
+							<div class="notification is-info" style="padding-right: 1.5rem;">
+								<p class="heading">Successful Orders</p>
+								<p class="title" id="ordersCompleted">0</p>
+							</div>
+						</div>
+						<div class="level-item has-text-centered">
+							<div class="notification is-info" style="padding-right: 1.5rem;">
+								<p class="heading">Orders Remaining</p>
+								<p class="title" id="ordersRemaining">50</p>
+							</div>
+						</div>
+						<div class="level-item has-text-centered">
+							<div class="notification is-info" style="padding-right: 1.5rem;">
+								<p class="heading">Time</p>
+								<p class="title" id="timeCounter">00:00</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="section">
+			<h1 class="title is-2 has-text-centered" id="orderNumber">Current Order #0</h1>
+			<hr>
+			<div class="columns has-text-centered">
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Feet</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/feet.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="feetColor">
+						<strong class="partText" id="feetText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Legs</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/legs.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="legsColor">
+						<strong class="partText" id="legsText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Torso</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/torso.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="torsoColor">
+						<strong class="partText" id="torsoText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Arms</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/arms.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="armsColor">
+						<strong class="partText" id="armsText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Face</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/face.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="faceColor">
+						<strong class="partText" id="faceText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Eyes</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/eyes.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="eyesColor">
+						<strong class="partText" id="eyesText">INACTIVE</strong>
+					</div>
+				</div>
+				<div class="column">
+					<div class="box">
+						<h1 class="title">Hat</h1>
+						<hr>
+						<figure class="image is-128x128 partImage">
+							<img src="assets/hat.png">
+						</figure>
+					</div>
+					<div class="box is-size-3" id="hatColor">
+						<strong class="partText" id="hatText">INACTIVE</strong>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="hero is-dark">
+			<div class="hero-body">
+				<div class="level">
+					<div class="level-left">
+						<div class="level-item">
+							<a class="button is-large is-success approveButton">Approve</a>
+						</div>
+						<div class="level-item">
+							<a class="button is-large is-danger failButton">Fail</a>
+						</div>
+					</div>
+					<div class="level-right">
+						<div class="level-item">
+							<a class="button is-large is-warning resetButton">Reset Assembly</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="hero is-info">
+			<div class="hero-body">
+				<div class="container">
+					<h1 class="title">
+						Order History
+					</h1>
+					<table class="table is-bordered is-striped is-fullwidth">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Feet</th>
+								<th>Legs</th>
+								<th>Torso</th>
+								<th>Arms</th>
+								<th>Face</th>
+								<th>Eyes</th>
+								<th>Hat</th>
+							</tr>
+						</thead>
+						<tbody id="orderHistory">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<div class="modal" id="inactiveModal" role="dialog">
+			<div class="modal-background"></div>
+			<div class="modal-content">
+				<div class="box has-text-centered">
+					<h3 class="title">The Assembly Is Currently Inactive</h3>
+					<hr>
+					<a class="button is-large is-warning resetButton">Reset Assembly</a>
+					<hr>
+					<a class="button is-dark closeInactiveModal">Close</a>
+				</div>
+			</div>
+			<button class="modal-close is-large closeInactiveModal" aria-label="close"></button>
+		</div>
+
+		<div class="modal" id="stopModal" role="dialog">
+			<div class="modal-background"></div>
+			<div class="modal-content">
+				<div class="box has-text-centered">
+					<h3 class="title">The Assembly Has Been Stopped</h3>
+					<hr>
+					<div class="notification is-info" style="padding-right: 1.5rem;">
+						<p class="heading">Time Elapsed</p>
+						<p class="title" id="timeCounterFinal">00:00</p>
+					</div>
+					<div class="notification is-info" style="padding-right: 1.5rem;">
+						<p class="heading">Successful Orders</p>
+						<p class="title" id="ordersCompletedFinal">0</p>
+					</div>
+					<hr>
+					<a class="button is-dark closeStopModal">Close</a>
+				</div>
+			</div>
+			<button class="modal-close is-large closeStopModal" aria-label="close"></button>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="assets/app.js"></script>
+	</body>
+</html>
