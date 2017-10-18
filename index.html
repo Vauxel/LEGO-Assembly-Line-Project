@@ -4,26 +4,12 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>LEGO Assembly Orders Interface</title>
+
+		<link rel="stylesheet" type="text/css" href="assets/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/bulma.css">
-
-		<style>
-			html {
-				background-image: url("assets/bg.png");
-			}
-
-			.partText {
-				-webkit-text-stroke: 1.25px white;
-			}
-
-			.partImage {
-				display:block;
-				margin-left:auto;
-				margin-right:auto;
-			}
-		</style>
 	</head>
 	<body>
-		<section class="hero is-primary is-bold">
+		<section class="hero is-info is-bold">
 			<div class="hero-body">
 				<div class="level">
 					<div class="level-left">
@@ -40,19 +26,19 @@
 					</div>
 					<div class="level-right">
 						<div class="level-item has-text-centered">
-							<div class="notification is-info" style="padding-right: 1.5rem;">
+							<div class="header-block">
 								<p class="heading">Successful Orders</p>
 								<p class="title" id="ordersCompleted">0</p>
 							</div>
 						</div>
 						<div class="level-item has-text-centered">
-							<div class="notification is-info" style="padding-right: 1.5rem;">
+							<div class="header-block">
 								<p class="heading">Orders Remaining</p>
 								<p class="title" id="ordersRemaining">50</p>
 							</div>
 						</div>
 						<div class="level-item has-text-centered">
-							<div class="notification is-info" style="padding-right: 1.5rem;">
+							<div class="header-block">
 								<p class="heading">Time</p>
 								<p class="title" id="timeCounter">00:00</p>
 							</div>
@@ -61,120 +47,41 @@
 				</div>
 			</div>
 		</section>
-		<section class="section">
-			<h1 class="title is-2 has-text-centered" id="orderNumber">Current Order #0</h1>
-			<hr>
-			<div class="columns has-text-centered">
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Feet</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/feet.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="feetColor">
-						<strong class="partText" id="feetText">INACTIVE</strong>
-					</div>
+		<div id="assemblyView" style="display: none;">
+			<section class="orders-panel">
+				<div class="orders-panel-current">
+					Open Requests: <span id="orderRequests">0</span>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Legs</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/legs.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="legsColor">
-						<strong class="partText" id="legsText">INACTIVE</strong>
-					</div>
+				<div class="orders-panel-title">
+					<a href="javascript:chooseAssuranceDepartment();">The Department of Product Assembly</a>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Torso</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/torso.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="torsoColor">
-						<strong class="partText" id="torsoText">INACTIVE</strong>
-					</div>
+				<div class="orders-panel-request">
+					<a href="javascript:requestNewOrder();" class="button is-large is-warning">Request New Order</a>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Arms</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/arms.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="armsColor">
-						<strong class="partText" id="armsText">INACTIVE</strong>
-					</div>
+			</section>
+			<section class="orders" id="assemblyOrders">
+			</section>
+		</div>
+		<div id="assuranceView" style="display: none;">
+			<section class="orders-panel">
+				<div class="orders-panel-current">
+					Orders Awaiting Approval: <span id="orderApprovals">0</span>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Face</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/face.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="faceColor">
-						<strong class="partText" id="faceText">INACTIVE</strong>
-					</div>
+				<div class="orders-panel-title">
+					<a href="javascript:chooseAssemblyDepartment();">The Department of Quality Assurance</a>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Eyes</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/eyes.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="eyesColor">
-						<strong class="partText" id="eyesText">INACTIVE</strong>
-					</div>
+				<div class="orders-panel-request">
+					<a href="javascript:resetAssembly();" class="button is-large is-danger">Reset Assembly</a>
 				</div>
-				<div class="column">
-					<div class="box">
-						<h1 class="title">Hat</h1>
-						<hr>
-						<figure class="image is-128x128 partImage">
-							<img src="assets/hat.png">
-						</figure>
-					</div>
-					<div class="box is-size-3" id="hatColor">
-						<strong class="partText" id="hatText">INACTIVE</strong>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="hero is-dark">
-			<div class="hero-body">
-				<div class="level">
-					<div class="level-left">
-						<div class="level-item">
-							<a class="button is-large is-success approveButton">Approve</a>
-						</div>
-						<div class="level-item">
-							<a class="button is-large is-danger failButton">Fail</a>
-						</div>
-					</div>
-					<div class="level-right">
-						<div class="level-item">
-							<a class="button is-large is-warning resetButton">Reset Assembly</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="hero is-info">
+			</section>
+			<section class="orders" id="assuranceOrders">
+			</section>
+		</div>
+		<section class="hero is-primary is-bold completed-orders">
 			<div class="hero-body">
 				<div class="container">
 					<h1 class="title">
-						Order History
+						Completed Orders
 					</h1>
 					<table class="table is-bordered is-striped is-fullwidth">
 						<thead>
@@ -189,25 +96,23 @@
 								<th>Hat</th>
 							</tr>
 						</thead>
-						<tbody id="orderHistory">
+						<tbody id="completedOrders">
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</section>
 
-		<div class="modal" id="inactiveModal" role="dialog">
-			<div class="modal-background"></div>
+		<div class="modal" id="selectionModal" role="dialog">
+			<div class="modal-background" style="background-image: url('assets/bg.png');"></div>
 			<div class="modal-content">
-				<div class="box has-text-centered">
-					<h3 class="title">The Assembly Is Currently Inactive</h3>
-					<hr>
-					<a class="button is-large is-warning resetButton">Reset Assembly</a>
-					<hr>
-					<a class="button is-dark closeInactiveModal">Close</a>
+				<div class="has-text-centered">
+					<h1 class="subtitle is-1">Choose a Department</h1>
+					<a href="javascript:chooseAssemblyDepartment();" class="button is-large is-info">Product Assembly</a>
+					<br><br>
+					<a href="javascript:chooseAssuranceDepartment();" class="button is-large is-info">Quality Assurance</a>
 				</div>
 			</div>
-			<button class="modal-close is-large closeInactiveModal" aria-label="close"></button>
 		</div>
 
 		<div class="modal" id="stopModal" role="dialog">
@@ -225,13 +130,13 @@
 						<p class="title" id="ordersCompletedFinal">0</p>
 					</div>
 					<hr>
-					<a class="button is-dark closeStopModal">Close</a>
+					<a href="javascript:closeStopModal();" class="button is-dark">Close</a>
 				</div>
 			</div>
-			<button class="modal-close is-large closeStopModal" aria-label="close"></button>
+			<a href="javascript:closeStopModal();" class="modal-close is-large"></a>
 		</div>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="assets/jquery.min.js"></script>
 		<script src="assets/app.js"></script>
 	</body>
 </html>

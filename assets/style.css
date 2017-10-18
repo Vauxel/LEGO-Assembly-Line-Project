@@ -1,0 +1,128 @@
+html {
+	background-image: url("bg.png");
+}
+
+.columns {
+	margin: 0px !important;
+}
+
+.part-image {
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.header-block {
+	padding: 15px;
+	border: dashed 3px white;
+	background-color: #2B8FF2;
+}
+
+.completed-orders {
+	display: none;
+}
+
+.orders-panel {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: rgb(245, 245, 245);
+	padding: 20px;
+}
+
+.orders-panel > div {
+	flex: 0 1 auto;
+}
+
+.orders-panel-current {
+	color: #ffffff;
+	background-color: rgb(0, 178, 135);
+	padding: 10px;
+	font-size: 1.25em;
+	font-weight: bold;
+	border-radius: 15px;
+}
+
+.orders-panel-title {
+	border-bottom: solid 2px rgb(255, 221, 87);
+	font-weight: bold;
+	font-size: 2em;
+}
+
+.orders-panel-title a {
+	color: inherit;
+}
+
+.orders {
+	min-height: calc(100vh - 320px);
+	margin: 20px;
+}
+
+.order {
+	background-color: #fbfbfb;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+	box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+}
+
+.order:not(:last-child) {
+	margin-bottom: 20px;
+}
+
+.order-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: #ffffff;
+	background-color: rgb(54, 54, 54);
+	font-size: 1.25em;
+	font-weight: bolder;
+	padding: 8px 8px 8px 10px;
+}
+
+.order-number {
+	flex: 0 1 auto;
+	padding: 2.5px 7.5px 2.5px 7.5px;
+	background-color: #5c5c5c;
+}
+
+.order-controls {
+	flex: 0 1 auto;
+}
+
+.order-part {
+	padding: 0px !important;
+}
+
+.order-part:not(:last-child) {
+	border-right: solid 1.5px rgb(222, 222, 222);
+}
+
+.part-name {
+	text-align: center;
+	font-size: 1.75em;
+	font-weight: bold;
+}
+
+.part-color {
+	padding: 10px;
+	text-align: center;
+	font-size: 2em;
+	font-weight: bold;
+	-webkit-text-stroke: 1.5px white;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+}
+
+.part-color-beige { background-color: #D2B48C; }
+.part-color-black { background-color: #202020; }
+.part-color-blue { background-color: #3454B4; }
+.part-color-green { background-color: #239023; }
+.part-color-red { background-color: #D21919; }
+.part-color-white { background-color: #EFEFEF; }
+.part-color-grey { background-color: #939393; }
+.part-color-yellow { background-color: #F1E827; }
+.part-color-purple { background-color: #663096; }
+.part-color-orange { background-color: #FF5719; }
+.part-color-pink { background-color: #FF8396; }
+.part-color-brown { background-color: #96572A; }

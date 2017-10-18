@@ -7,6 +7,8 @@ var expressWs = require("express-ws")(app);
 
 var wsPoint;
 
+var orderLimit = 50;
+
 var feetColors = [
 	"beige",
 	"black",
@@ -87,19 +89,46 @@ Number.prototype.padLeft = function(n) {
 
 var assemblyActive = false;
 var startTime = 0;
+var lastOrderNumber = 0;
 
-var currentOrder = {
-	number: 0,
-	feet: "",
-	legs: "",
-	torso: "",
-	arms: "",
-	face: "",
-	eyes: "",
-	hat: ""
-};
+var assemblyOrders = {};
+var assuranceOrders = {};
+var completedOrders = [];
 
-var orderHistory = [];
+function requestNewOrder() {
+	lastOrderNumber++;
+	newAssemblyItem(lastOrderNumber);
+	broadcastAssemblyOrders();
+	broadcastInfo();
+}
+
+function assemblyFinishOrder(number) {
+	if(!(number in assemblyOrders)) {
+		return;
+	}
+
+	assuranceOrders[number] = assemblyOrders[number];
+	assemblyOrders[number] = undefined;
+	delete assemblyOrders[number];
+
+	broadcastInfo();
+	broadcastAssemblyOrders();
+	broadcastAssuranceOrders();
+}
+
+function assuranceApproveOrder(number) {
+	if(!(number in assuranceOrders)) {
+		return;
+	}
+
+	completedOrders.push(assuranceOrders[number]);
+	assuranceOrders[number] = undefined;
+	delete assuranceOrders[number];
+
+	broadcastInfo();
+	broadcastAssuranceOrders();
+	broadcastCompletedOrders();
+}
 
 function stopAssembly() {
 	assemblyActive = false;
@@ -107,31 +136,32 @@ function stopAssembly() {
 	wsPoint.clients.forEach(function(client) {
 		client.send(JSON.stringify({
 			command: "stop",
-			stopTime: Date.now()
+			completed: completedOrders.length,
+			timestamp: elapsedTime()
 		}));
 	});
-}
 
-function nextAssemblyItem() {
-	newAssemblyItem(currentOrder.number + 1);
+	console.log("Assembly stopped on Order #" + lastOrderNumber + " @ " + elapsedTime());
 }
 
 function resetAssembly() {
+	assemblyOrders = {};
+	assuranceOrders = {};
+	completedOrders = [];
+
 	assemblyActive = true;
 	startTime = Date.now();
+	lastOrderNumber = 1;
 
-	newAssemblyItem(1);
+	newAssemblyItem(lastOrderNumber);
+
+	broadcastInfo();
+	broadcastOrders();
 }
 
 function newAssemblyItem(number) {
-	if(number == 1) {
-		orderHistory = [];
-	} else {
-		orderHistory.push(currentOrder);
-	}
-
-	currentOrder = {
-		number: number,
+	assemblyOrders[number] = {
+		number: number.padLeft(2),
 		feet: feetColors.randomElement(),
 		legs: legsColors.randomElement(),
 		torso: torsoColors.randomElement(),
@@ -140,19 +170,58 @@ function newAssemblyItem(number) {
 		eyes: eyeColors.randomElement(),
 		hat: hatColors.randomElement()
 	};
-
-	broadcastState();
 }
 
-function broadcastState() {
+function broadcastInfo() {
 	var timestamp = elapsedTime();
+	var requestsLength = Object.keys(assemblyOrders).length;
+	var approvalsLength = Object.keys(assuranceOrders).length;
 
 	wsPoint.clients.forEach(function(client) {
 		client.send(JSON.stringify({
-			command: "update",
-			order: currentOrder,
-			history: orderHistory,
+			command: "info",
+			completed: completedOrders.length,
+			requests: requestsLength,
+			approvals: approvalsLength,
 			timestamp: timestamp
+		}));
+	});
+}
+
+function broadcastOrders() {
+	wsPoint.clients.forEach(function(client) {
+		client.send(JSON.stringify({
+			command: "orders",
+			assembly: assemblyOrders,
+			assurance: assuranceOrders,
+			completed: completedOrders
+		}));
+	});
+}
+
+function broadcastAssemblyOrders() {
+	wsPoint.clients.forEach(function(client) {
+		client.send(JSON.stringify({
+			command: "orders_assembly",
+			orders: assemblyOrders
+		}));
+	});
+}
+
+function broadcastAssuranceOrders() {
+	wsPoint.clients.forEach(function(client) {
+		client.send(JSON.stringify({
+			command: "orders_assurance",
+			orders: assuranceOrders
+		}));
+	});
+}
+
+function broadcastCompletedOrders() {
+	wsPoint.clients.forEach(function(client) {
+		client.send(JSON.stringify({
+			command: "orders_completed",
+			orders: completedOrders
 		}));
 	});
 }
@@ -169,18 +238,24 @@ function elapsedTime() {
 }
 
 app.get("/", function(req, res) {
-	res.sendfile("index.html");
+	res.sendFile(__dirname + "/index.html");
 });
 
 app.ws("/", function(ws, req) {
 	if(assemblyActive) {
-		var timestamp = elapsedTime();
+		ws.send(JSON.stringify({
+			command: "orders",
+			assembly: assemblyOrders,
+			assurance: assuranceOrders,
+			completed: completedOrders
+		}));
 
 		ws.send(JSON.stringify({
-			command: "update",
-			order: currentOrder,
-			history: orderHistory,
-			timestamp: timestamp
+			command: "info",
+			completed: completedOrders.length,
+			requests: Object.keys(assemblyOrders).length,
+			approvals: Object.keys(assuranceOrders).length,
+			timestamp: elapsedTime()
 		}));
 	} else {
 		ws.send(JSON.stringify({
@@ -189,27 +264,39 @@ app.ws("/", function(ws, req) {
 	}
 
 	ws.on("message", function(msg) {
-		if(msg == "approve") {
-			if(assemblyActive) {
-				nextAssemblyItem();
+		var parsed = msg.split(' ');
 
-				if(currentOrder.number > 50) {
-					stopAssembly();
-					console.log("Assembly order approved, no more assembly orders to complete");
-					console.log("Assembly successfully finished 50 orders @ " + elapsedTime());
-				} else {
-					console.log("Assembly order approved, moving onto a new order");
+		if(parsed[0] == "request") {
+			if(assemblyActive) {
+				if(lastOrderNumber < orderLimit) {
+					requestNewOrder();
+					console.log("New assembly order requested (#" + lastOrderNumber + ")");
 				}
 			}
-		} else if(msg == "fail") {
+		} else if(parsed[0] == "finish") {
+			if(assemblyActive) {
+				assemblyFinishOrder(parsed[1]);
+				console.log("Assembly order #" + parsed[1] + " finished being built");
+			}
+		} else if(parsed[0] == "approve") {
+			if(assemblyActive) {
+				assuranceApproveOrder(parsed[1]);
+				console.log("Assembly order #" + parsed[1] + " approved and completed");
+
+				if(completedOrders.length >= orderLimit) {
+					stopAssembly();
+					console.log("Assembly successfully completed " + completedOrders.length + " orders in " + elapsedTime());
+				}
+			}
+		} else if(parsed[0] == "fail") {
 			if(assemblyActive) {
 				stopAssembly();
 				console.log("Assembly order failed, stopping assembly");
-				console.log("Assembly stopped on Order #" + currentOrder.number + " @ " + elapsedTime());
+				console.log("Assembly stopped on Order #" + lastOrderNumber + " @ " + elapsedTime());
 			}
-		} else if(msg == "reset") {
+		} else if(parsed[0] == "reset") {
 			resetAssembly();
-			console.log("Assembly reset");
+			console.log("The assembly has been reset");
 		}
 	});
 
@@ -219,12 +306,11 @@ app.ws("/", function(ws, req) {
 wsPoint = expressWs.getWss();
 
 app.get(/^(.+)$/, function(req, res){
-	res.sendfile(__dirname + req.params[0]);
+	res.sendFile(__dirname + req.params[0]);
 });
 
-var port = process.env.PORT || 8080;
-app.listen(port, function() {
-	console.log("LEGO Assembly Orders Interface app started on port " + port);
+app.listen(8080, function() {
+	console.log("LEGO Assembly Orders Interface app started on port 8080");
 });
 
 setInterval(function() {
