@@ -22,7 +22,7 @@ var legsColors = [
 	"blue",
 	"green",
 	"grey",
-	"purple",
+	"pink",
 	"white",
 	"yellow"
 ];

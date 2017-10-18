@@ -71,7 +71,7 @@ function addOrders(orders, destination) {
 				<a href="javascript:failOrder(${number});" class="button is-danger">Fail</a>`;
 			}
 
-			$(destination).prepend(`<div class="order">
+			$(destination).append(`<div class="order">
 				<div class="order-header">
 					<div class="order-number"># ${number}</div>
 					<div class="order-controls">
